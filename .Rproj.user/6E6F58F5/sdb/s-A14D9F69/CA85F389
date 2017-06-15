@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "Package: tsoutlier\nVersion: 0.6-6\nDate: 2017-05-27\nTitle: Detection of Outliers in Time Series\nDescription: Detection of outlier\nAuthor: kartikeya\nDepends: R (>= 3.0.0)\nImports: forecast,zoo,tsoutliers,jsonlite\nNeedsCompilation: no\nEncoding: UTF-8\nLicense: GPL-2\nRepository: CRAN\nDate/Publication: 2017-05-27 21:23:39 UTC\n",
+    "created" : 1497474846223.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2881514220",
+    "id" : "CA85F389",
+    "lastKnownWriteTime" : 1497476100,
+    "last_content_update" : 1497476100292,
+    "path" : "~/tsoutlier/DESCRIPTION",
+    "project_path" : "DESCRIPTION",
+    "properties" : {
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "dcf"
+}

@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "#' @import zoo , forecast\n\ntimeseries<-function (data = NA, start = 1, end = numeric(), frequency = 1,\n                      deltat = 1, class = if (nseries >\n                                              1) c(\"mts\", \"ts\", \"matrix\") else \"ts\", names = if (!is.null(dimnames(data))) colnames(data) else paste(\"Series\",\n                                                                                                                                                     seq(nseries)))\n{\n  if (is.data.frame(data))\n    data <- data.matrix(data)\n  if (is.matrix(data)) {\n    nseries <- ncol(data)\n    ndata <- nrow(data)\n    dimnames(data) <- list(NULL, names)\n  }\n  else {\n    nseries <- 1\n    ndata <- length(data)\n  }\n  if (ndata == 0)\n    stop(\"'ts' object must have one or more observations\")\n  if (missing(frequency))\n    frequency <- 1/deltat\n  else if (missing(deltat))\n    deltat <- 1/frequency\n  if (frequency > 1 && abs(frequency - round(frequency)) <\n      ts.eps)\n    frequency <- round(frequency)\n  if (length(start) > 1L) {\n    start <- start[1L] + (start[2L] - 1)/frequency\n  }\n  if (length(end) > 1L) {\n    end <- end[1L] + (end[2L] - 1)/frequency\n  }\n  if (missing(end))\n    end <- start + (ndata - 1)/frequency\n  else if (missing(start))\n    start <- end - (ndata - 1)/frequency\n  if (start > end)\n    stop(\"'start' cannot be after 'end'\")\n  nobs <- floor((end - start) * frequency + 1.01)\n  if (nobs != ndata)\n    data <- if (NCOL(data) == 1) {\n      if (ndata < nobs)\n        rep_len(data, nobs)\n      else if (ndata > nobs)\n        data[1L:nobs]\n    }\n  else {\n    if (ndata < nobs)\n      data[rep_len(1L:ndata, nobs), ]\n    else if (ndata > nobs)\n      data[1L:nobs, ]\n  }\n  attr(data, \"tsp\") <- c(start, end, frequency)\n  if (!is.null(class) && class != \"none\")\n    attr(data, \"class\") <- class\n  data\n}\n\n\n#timeseries conversion\ntimeseries_conversion<- function (x = NULL, order.by = index(x),\n                                  calendar = getOption(\"zoo.calendar\", TRUE))\n{\n\n\n\n\n  ## process index \"order.by\"\n  if(length(unique(MATCH(order.by, order.by))) < length(order.by))\n    warning(paste(\"some methods for\", dQuote(\"zoo\"),\n                  \"objects do not work if the index entries in\", sQuote(\"order.by\"), \"are not unique\"))\n  index <- ORDER(order.by)\n  order.by <- order.by[index]\n\n  if(is.matrix(x) || is.data.frame(x)) x <- as.matrix(x)\n  if(is.matrix(x) && sum(dim(x)) < 1L) x <- NULL\n  if(missing(x) || is.null(x))\n    x <- numeric()\n  else if(is.factor(x))\n    x <- factor(rep(as.character(x), length.out = length(index))[index],\n                levels = levels(x), ordered = is.ordered(x))\n  else if(is.matrix(x) || is.data.frame(x))\n    x <- (x[rep(1:NROW(x), length.out = length(index)), ,\n            drop = FALSE])[index, , drop = FALSE]\n  else if(is.atomic(x))\n    x <- rep(x, length.out = length(index))[index]\n  else stop(paste(dQuote(\"x\"), \": attempt to define invalid zoo object\"))\n\n\n  attr(x, \"oclass\") <- attr(x, \"class\")\n  attr(x, \"index\") <- order.by\n  attr(x, \"frequency\") <- frequency\n  class(x) <- if(is.null(frequency)) \"zoo\" else c(\"zooreg\", \"zoo\")\n  return(x)\n}\n",
+    "created" : 1497475102132.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1085328350",
+    "id" : "BBD4207B",
+    "lastKnownWriteTime" : 1497475285,
+    "last_content_update" : 1497475285965,
+    "path" : "~/tsoutlier/R/timeseries.R",
+    "project_path" : "R/timeseries.R",
+    "properties" : {
+        "tempName" : "Untitled2"
+    },
+    "relative_order" : 7,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

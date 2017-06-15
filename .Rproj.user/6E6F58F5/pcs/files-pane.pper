@@ -1,0 +1,9 @@
+{
+    "path" : "~/tsoutlier",
+    "sortOrder" : [
+        {
+            "ascending" : true,
+            "columnIndex" : 2
+        }
+    ]
+}

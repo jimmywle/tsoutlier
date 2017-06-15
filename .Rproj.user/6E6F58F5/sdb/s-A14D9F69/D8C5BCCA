@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "#' @title newfunction\n#' @description newfunction\n#' This function allows you to express your love of cats.\n#' @param input json format.\n#' @export\n#' @import jsonlite\n#' cat_function()\n\n\nalgorithm <- function(input){\n  options(warn=-1)\n  dat<-fromJSON(input)\n  dat[,1]<-as.Date(as.character(dat[,1]), format='%Y-%m-%d')\n  dat<-dat[order(dat[,1]),]\n\n  t_c<- timeseries_conversion(dat[,2], order.by=dat[,1])\n  tsm<-timeseries(t_c)\n\n  indx <- 1:length(dat[,1])\n  var.use <- dat[,2]\n  lo <- loess(var.use~indx)\n  predicted<-predict(lo)\n\n\n  temp<-var.use\n\n  analysis<-outlier_detection(tsm,maxit.iloop = 1)\n  if(nrow(analysis)==0){\n    diff<-abs(predicted-var.use)\n    per_diff<-diff/predicted *100\n    per_limt<-min(per_diff[analysis$ind])\n    limit<-max(per_diff[- analysis$ind])\n    limit<-mean(limit,per_limt)\n    limit_s<-summary(per_diff)\n\n  } else {\n    diff<-abs(predicted-var.use)\n    per_diff<-diff/predicted *100\n    limit<-90\n    limit_s<-summary(per_diff)\n\n  }\n\n  n<-length(temp)\n  for(i in analysis$ind){\n    if(n<=6){\n      if(i<4){\n        rng<-(i+1):(n)\n      } else rng<-c((i-2):(i-1),(n-1):(n))\n\n    }else{rng<-c((i-3):(i-1),(i+1):(i+3))}\n\n\n\n    temp[i]<-mean(temp[rng])\n  }\n\n\n\n  temp<-predict(loess(temp~indx))\n\n\n  outlier<-list()\n  outlier[1:length(dat[,1])]<-\"0\"\n  outlier[analysis$ind]<-\"outlier\"\n  tmp<-data.frame(dat[,1],predicted,var.use,temp +(temp*limit)/100 ,temp -(temp*limit)/100,temp +(temp*limit_s[5]*2)/100 ,temp -(temp*limit_s[5]*2)/100,unlist(outlier))\n  colnames(tmp)<-c(\"Date\",\"Predicted\",\"Actual\",\"upperOffOutlierLimit\",\"lowerOffOutlierLimit\",\"upperSafe3rdQuantLimit\",\"lowerSafe3rdQuantLimit\",\"Sensitivity\")\n\n  chk<-tmp[tmp$Sensitivity==\"outlier\",]\n  if(nrow(chk)!=0){\n    for(i in nrow(chk)){\n      if(abs(chk$Actual[i]-chk$upperOffOutlierLimit[i]) <abs(chk$Actual[i]-chk$lowerOffOutlierLimit[i])){\n\n        if(!(chk$Actual[i]>chk$upperOffOutlierLimit[i]))\n        {\n          chk$upperOffOutlierLimit[i]<- chk$Actual[i]*0.30\n        }\n        if(!(chk$Actual[i]>chk$upperSafe3rdQuantLimit[i]))\n        {\n          chk$upperSafe3rdQuantLimit[i]<- chk$Actual[i]*0.30\n        }\n      }else{\n        if((chk$Actual[i]>chk$lowerOffOutlierLimit[i]))\n        {\n          chk$lowerOffOutlierLimit[i]<- chk$Actual[i]*1.2\n        }\n        if((chk$Actual[i]>chk$upperSafe3rdQuantLimit[i]))\n        {\n          chk$lowerSafe3rdQuantLimit[i]<- chk$Actual[i]*1.2\n        }\n      }\n\n    }\n    chk->tmp[tmp$Sensitivity==\"outlier\",]}\n  ###############################################\n  options(warn=0)\n  # if(plot_value==T){\n  #   plot_dia<-ggplot(tmp,aes(Date))+\n  #     geom_line(data = tmp,aes(Date,Predicted),size=2,col=\"steelblue\")+\n  #     geom_point(data = tmp,aes(Date,Actual,col=Sensitivity))+\n  #     geom_ribbon(aes(ymin=lowerOffOutlierLimit,ymax=upperOffOutlierLimit),alpha=.25,fill=\"steelblue\")+\n  #     labs(title='Outlier Detection')+\n  #     theme(axis.text= element_text(face = \"bold\",size = 7.5)     ,\n  #           axis.title.y =element_blank() ,\n  #           axis.title.x =element_blank() ,\n  #           plot.title = element_text(size =11, face = \"bold\") ,\n  #           plot.subtitle = element_text(size = 12),legend.position = \"None\"\n  #     )+\n  #     scale_color_manual(values=c(\"0\" = \"#333BFF\", \"outlier\" = \"#CC6600\"))\n  #\n  #   return(plot_dia)\n  # } else return(tmp)\n\n  json<-toJSON(tmp)\n  json\n}\n\n\n",
+    "created" : 1497474614111.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3775385357",
+    "id" : "D8C5BCCA",
+    "lastKnownWriteTime" : 1497476054,
+    "last_content_update" : 1497476054728,
+    "path" : "~/tsoutlier/R/algorithm.R",
+    "project_path" : "R/algorithm.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

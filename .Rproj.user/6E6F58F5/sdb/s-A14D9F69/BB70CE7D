@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "exportPattern(\"^[[:alpha:]]+\")\nimport(forecast,zoo,tsoutliers,jsonlite)\nexport(algorithm)\n",
+    "created" : 1497476205883.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2156486895",
+    "id" : "BB70CE7D",
+    "lastKnownWriteTime" : 1497476402,
+    "last_content_update" : 1497476402731,
+    "path" : "~/tsoutlier/NAMESPACE",
+    "project_path" : "NAMESPACE",
+    "properties" : {
+    },
+    "relative_order" : 9,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_namespace"
+}
