@@ -9,7 +9,8 @@
 
 algorithm <- function(input){
   options(warn=-1)
-  dat<-fromJSON(input)
+  # dat<-fromJSON(input)
+  dat<-input
   dat[,1]<-as.Date(as.character(dat[,1]), format='%Y-%m-%d')
   dat<-dat[order(dat[,1]),]
 
