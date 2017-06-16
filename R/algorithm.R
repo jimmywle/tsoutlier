@@ -62,12 +62,12 @@ algorithm <- function(input){
 
 
   outlier<-list()
-  outlier[1:length(dat[,1])]<-"0"
-  outlier[analysis$ind]<-"outlier"
+  outlier[1:length(dat[,1])]<-0
+  outlier[analysis$ind]<-1
   tmp<-data.frame(dat[,1],predicted,var.use,temp +(temp*limit)/100 ,temp -(temp*limit)/100,temp +(temp*limit_s[5]*2)/100 ,temp -(temp*limit_s[5]*2)/100,unlist(outlier))
   colnames(tmp)<-c("Date","Predicted","Actual","upperOffOutlierLimit","lowerOffOutlierLimit","upperSafe3rdQuantLimit","lowerSafe3rdQuantLimit","Sensitivity")
 
-  chk<-tmp[tmp$Sensitivity=="outlier",]
+  chk<-tmp[tmp$Sensitivity==1,]
   if(nrow(chk)!=0){
     for(i in nrow(chk)){
       if(abs(chk$Actual[i]-chk$upperOffOutlierLimit[i]) <abs(chk$Actual[i]-chk$lowerOffOutlierLimit[i])){
@@ -92,7 +92,7 @@ algorithm <- function(input){
       }
 
     }
-    chk->tmp[tmp$Sensitivity=="outlier",]}
+    chk->tmp[tmp$Sensitivity==1,]}
   ###############################################
   options(warn=0)
   # if(plot_value==T){
@@ -112,8 +112,9 @@ algorithm <- function(input){
   #   return(plot_dia)
   # } else return(tmp)
 
-  json<-toJSON(tmp)
-  json
+  # json<-toJSON(tmp)
+  # json
+  tmp
 }
 
 
