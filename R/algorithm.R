@@ -1,20 +1,28 @@
-#' @title newfunction
-#' @description newfunction
-#' This function allows you to express your love of cats.
+#' @title Algorithm
+#' @description Function deals with outlier detection functionality for timeseries data
+#'  USE Some Prebild function from packages
 #' @param input json format.
 #' @export
 #' @import jsonlite
-#' cat_function()
+#' algorithm()
 
 
 algorithm <- function(input){
   options(warn=-1)
   # dat<-fromJSON(input)
+  input[,2]<-as.numeric(input[,2])
   dat<-input
-  dat[,1]<-as.Date(as.character(dat[,1]), format='%Y-%m-%d')
-  dat<-dat[order(dat[,1]),]
 
-  t_c<- timeseries_conversion(dat[,2], order.by=dat[,1])
+  if(nchar(dat[,1][1])>10){
+    seq_len<-nrow(dat)
+    input[,1]<-seq(as.Date("2000/1/1"), by = "day", length.out = seq_len)
+    input[,1]<-as.Date(as.character(input[,1]), format='%Y-%m-%d')
+    dat[,1]<-as.POSIXct(dat[,1])
+  }else {
+    dat[,1]<-as.Date(as.character(dat[,1]), format='%Y-%m-%d')
+    dat<-dat[order(dat[,1]),]
+  }
+  t_c<- timeseries_conversion(input[,2], order.by=input[,1])
   tsm<-timeseries(t_c)
 
   indx <- 1:length(dat[,1])
@@ -26,7 +34,7 @@ algorithm <- function(input){
   temp<-var.use
 
   analysis<-outlier_detection(tsm,maxit.iloop = 1)
-  if(nrow(analysis)==0){
+  if(nrow(analysis)!=0){
     diff<-abs(predicted-var.use)
     per_diff<-diff/predicted *100
     per_limt<-min(per_diff[analysis$ind])
