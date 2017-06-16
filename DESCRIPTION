@@ -9,5 +9,5 @@ Imports: forecast,zoo,tsoutliers,jsonlite
 NeedsCompilation: no
 Encoding: UTF-8
 License: GPL-2
-Repository: CRAN
+Repository: Github/kartikeyakirar
 Date/Publication: 2017-05-27 21:23:39 UTC
