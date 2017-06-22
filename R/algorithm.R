@@ -33,75 +33,79 @@ algorithm <- function(input){
 
   temp<-var.use
 
-  analysis<-outlier_detection(tsm,maxit.iloop = 1)
+  #analysis<-outlier_detection(tsm,maxit.iloop = 1)
+  result<-tso(tsm,maxit.iloop = 1)
+  analysis<-result$outliers
+
+
+####
   if(nrow(analysis)!=0){
-    diff<-abs(predicted-var.use)
-    per_diff<-diff/predicted *100
-    per_limt<-min(per_diff[analysis$ind])
-    limit<-max(per_diff[- analysis$ind])
-    limit<-mean(limit,per_limt)
-    limit_s<-summary(per_diff)
-
-  } else {
-    diff<-abs(predicted-var.use)
-    per_diff<-diff/predicted *100
-    limit<-90
-    limit_s<-summary(per_diff)
-
-  }
-
-  n<-length(temp)
-  for(i in analysis$ind){
-    if(n<=6){
-      if(i<4){
-        rng<-(i+1):(n)
-      } else rng<-c((i-2):(i-1),(n-1):(n))
-
-    }else{rng<-c((i-3):(i-1),(i+1):(i+3))}
-
-
-
-    temp[i]<-mean(temp[rng])
-  }
-
-
-
-  temp<-predict(loess(temp~indx))
-
-
+  dat[,2][result$times]<-result$yadj[result$times]
   outlier<-list()
   outlier[1:length(dat[,1])]<-0
   outlier[analysis$ind]<-1
-  tmp<-data.frame(dat[,1],predicted,var.use,temp +(temp*limit)/100 ,temp -(temp*limit)/100,temp +(temp*limit_s[5]*2)/100 ,temp -(temp*limit_s[5]*2)/100,unlist(outlier))
-  colnames(tmp)<-c("Date","Predicted","Actual","upperOffOutlierLimit","lowerOffOutlierLimit","upperSafe3rdQuantLimit","lowerSafe3rdQuantLimit","Sensitivity")
 
-  chk<-tmp[tmp$Sensitivity==1,]
-  if(nrow(chk)!=0){
-    for(i in nrow(chk)){
-      if(abs(chk$Actual[i]-chk$upperOffOutlierLimit[i]) <abs(chk$Actual[i]-chk$lowerOffOutlierLimit[i])){
+  raw_limit<-sum(abs(var.use-dat[,2])/var.use)/length(result$times)
+  limit<-raw_limit*0.5
+  chk<-unique((var.use-dat[,2])/var.use)[-1]
 
-        if(!(chk$Actual[i]>chk$upperOffOutlierLimit[i]))
-        {
-          chk$upperOffOutlierLimit[i]<- chk$Actual[i]*0.30
-        }
-        if(!(chk$Actual[i]>chk$upperSafe3rdQuantLimit[i]))
-        {
-          chk$upperSafe3rdQuantLimit[i]<- chk$Actual[i]*0.30
-        }
-      }else{
-        if((chk$Actual[i]>chk$lowerOffOutlierLimit[i]))
-        {
-          chk$lowerOffOutlierLimit[i]<- chk$Actual[i]*1.2
-        }
-        if((chk$Actual[i]>chk$upperSafe3rdQuantLimit[i]))
-        {
-          chk$lowerSafe3rdQuantLimit[i]<- chk$Actual[i]*1.2
-        }
-      }
+  if(sum(chk<limit)==0){
+    limit_s<-limit*0.5
+  } else{
+    limit<-limit*0.75
+    limit_s<-limit*0.5
+  }
 
-    }
-    chk->tmp[tmp$Sensitivity==1,]}
-  ###############################################
+  if(sum(chk<limit)!=0){
+    limit<-limit*0.75
+    limit_s<-limit*0.75
+  }
+
+  temp<-dat[,2]
+  tmp<-data.frame(input[,1],predicted,var.use,temp +(temp*limit) ,temp -(temp*limit),temp +(temp*limit_s),temp -(temp*limit_s),unlist(outlier))
+
+  } else{
+
+    temp<-dat[,2]
+    outlier<-list()
+    outlier[1:length(dat[,1])]<-0
+
+    limit<-0.5
+    limit_s<-limit*0.6
+
+    tmp<-data.frame(dat[,1],predicted,var.use,temp +(temp*limit) ,temp -(temp*limit),temp +(temp*limit_s),temp -(temp*limit_s),unlist(outlier))
+
+  }
+
+    colnames(tmp)<-c("Date","Predicted","Actual","upperOffOutlierLimit","lowerOffOutlierLimit","upperSafe3rdQuantLimit","lowerSafe3rdQuantLimit","Sensitivity")
+
+  # chk<-tmp[tmp$Sensitivity==1,]
+  # if(nrow(chk)!=0){
+  #   for(i in nrow(chk)){
+  #     if(abs(chk$Actual[i]-chk$upperOffOutlierLimit[i]) <abs(chk$Actual[i]-chk$lowerOffOutlierLimit[i])){
+  #
+  #       if(!(chk$Actual[i]>chk$upperOffOutlierLimit[i]))
+  #       {
+  #         chk$upperOffOutlierLimit[i]<- chk$Actual[i]*0.30
+  #       }
+  #       if(!(chk$Actual[i]>chk$upperSafe3rdQuantLimit[i]))
+  #       {
+  #         chk$upperSafe3rdQuantLimit[i]<- chk$Actual[i]*0.30
+  #       }
+  #     }else{
+  #       if((chk$Actual[i]>chk$lowerOffOutlierLimit[i]))
+  #       {
+  #         chk$lowerOffOutlierLimit[i]<- chk$Actual[i]*1.2
+  #       }
+  #       if((chk$Actual[i]>chk$upperSafe3rdQuantLimit[i]))
+  #       {
+  #         chk$lowerSafe3rdQuantLimit[i]<- chk$Actual[i]*1.2
+  #       }
+  #     }
+  #
+  #   }
+  #   chk->tmp[tmp$Sensitivity==1,]}
+  # ###############################################
   options(warn=0)
   # if(plot_value==T){
   #   plot_dia<-ggplot(tmp,aes(Date))+
