@@ -27,17 +27,17 @@ algorithm <- function(input){
 
   indx <- 1:length(dat[,1])
   var.use <- dat[,2]
-  lo <- loess(var.use~indx)
-  predicted<-predict(lo)
+
+
 
 
   temp<-var.use
 
   #analysis<-outlier_detection(tsm,maxit.iloop = 1)
-  result<-tso(tsm,maxit.iloop = 1)
+  result<-tso(tsm)
   analysis<-result$outliers
-
-
+  lo <- loess(result$yadj~indx)
+  predicted<-predict(lo)
 ####
   if(nrow(analysis)!=0){
   dat[,2][result$times]<-result$yadj[result$times]
