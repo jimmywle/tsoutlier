@@ -19,6 +19,9 @@ algorithm <- function(input){
     input[,1]<-as.Date(as.character(input[,1]), format='%Y-%m-%d')
     dat[,1]<-as.POSIXct(dat[,1])
   }else {
+    input[,1]<-as.Date(as.character(input[,1]), format='%Y-%m-%d')
+    input<-input[order(input[,1]),]
+
     dat[,1]<-as.Date(as.character(dat[,1]), format='%Y-%m-%d')
     dat<-dat[order(dat[,1]),]
   }
@@ -62,7 +65,7 @@ algorithm <- function(input){
   }
 
   temp<-dat[,2]
-  tmp<-data.frame(input[,1],predicted,var.use,temp +(temp*limit) ,temp -(temp*limit),temp +(temp*limit_s),temp -(temp*limit_s),unlist(outlier))
+  tmp<-data.frame(dat[,1],predicted,var.use,temp +(temp*limit) ,temp -(temp*limit),temp +(temp*limit_s),temp -(temp*limit_s),unlist(outlier))
 
   } else{
 
