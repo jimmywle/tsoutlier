@@ -48,9 +48,15 @@ algorithm <- function(input){
   outlier[1:length(dat[,1])]<-0
   outlier[analysis$ind]<-1
 
-  raw_limit<-sum(abs(var.use-dat[,2])/var.use)/length(result$times)
+  dif<-(var.use-dat[,2])
+  pos<-which(dif>0)
+  neg<-which(dif<0)
+  p<-dif[pos]/var.use[pos]
+  n<-dif[neg]/dat[,2][neg]
+
+  raw_limit<-sum(p,abs(n))/length(result$times)
   limit<-raw_limit*0.5
-  chk<-unique((var.use-dat[,2])/var.use)[-1]
+  chk<-c(p,abs(n))
 
   if(sum(chk<limit)==0){
     limit_s<-limit*0.5
@@ -67,7 +73,7 @@ algorithm <- function(input){
   temp<-dat[,2]
   tmp<-data.frame(dat[,1],predicted,var.use,temp +(temp*limit) ,temp -(temp*limit),temp +(temp*limit_s),temp -(temp*limit_s),unlist(outlier))
 
-  } else{
+} else{
 
     temp<-dat[,2]
     outlier<-list()
