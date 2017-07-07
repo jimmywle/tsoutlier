@@ -53,10 +53,11 @@ algorithm <- function(input){
   neg<-which(dif<0)
   p<-dif[pos]/var.use[pos]
   n<-dif[neg]/dat[,2][neg]
-
-  raw_limit<-sum(p,abs(n))/length(result$times)
+  wq<-c(p,abs(n))
+  wq<-wq[is.finite(wq)]
+  raw_limit<-sum(wq)/length(wq)
   limit<-raw_limit*0.5
-  chk<-c(p,abs(n))
+  chk<-wq
 
   if(sum(chk<limit)==0){
     limit_s<-limit*0.5
@@ -139,3 +140,4 @@ algorithm <- function(input){
 }
 
 
+#with_libpaths(new = "/usr/lib/R/site-library/", install_github("wington/tsoutlier"))
